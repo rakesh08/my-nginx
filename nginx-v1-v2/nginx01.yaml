@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: nginx01
+  name: nginx01
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx01
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: nginx01
+        apps: nginx
+    spec:
+      volumes:
+      - name: workdir
+        emptyDir: {}
+      containers:
+        - name: nginx
+          image: nginx
+          ports:
+          - containerPort: 80
+          volumeMounts:
+          - name: workdir
+            mountPath: /usr/share/nginx/html
+  # These containers are run during pod initialization
+      initContainers:
+      - name: install
+        image: busybox
+        command:
+        - sh
+        - -c
+        args:
+        - echo "nginx01" >  /work-dir/index.html
+        volumeMounts:
+        - name: workdir
+          mountPath: "/work-dir"
